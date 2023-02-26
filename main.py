@@ -4,7 +4,7 @@ TODO: write docstr
 import typer
 from loguru import logger
 
-from vk_fetch import core, fetchers
+from vk_fetch import core, fetchers, constants, utils
 
 app = typer.Typer(name="vk_fetch", help=__doc__)
 
@@ -49,6 +49,15 @@ def show(
     for p in photos:
         logger.info(p)
     logger.info("---------------------------------")
+    to_exclude = []
+    convs = fetchers.conversations(api).excluded_peers(to_exclude)
+    for peer_id in convs.peer_ids():
+        logger.info(f"Fetched photos of conversation(peer_id={peer_id})")
+        attachment_items = fetchers.conversation_attachments_iter(
+            api, peer_id, constants.MediaType.Photo
+        )
+        for aitem in attachment_items:
+            logger.info(aitem.attachment.photo.highest_quality())
 
 
 if __name__ == "__main__":

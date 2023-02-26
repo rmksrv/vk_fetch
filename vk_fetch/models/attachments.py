@@ -30,6 +30,7 @@ class AttachmentItem:
     from_id: int
     cmid: int
     attachment: Attachment
+    forward_level: int | None = None
 
     @classmethod
     def of(cls, d: dict[str, t.Any]) -> t.Self:

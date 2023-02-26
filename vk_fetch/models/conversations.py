@@ -1,3 +1,4 @@
+import collections
 import dataclasses as dc
 import typing as t
 
@@ -14,7 +15,7 @@ class ConversationPeer:
     def of(cls, d: dict[str, t.Any]) -> t.Self:
         return cls(
             type=constants.ConversationType(d.get("type")),
-            **utils.keys_excluded_dict(d, ["type"])
+            **utils.keys_excluded_dict(d, ["type"]),
         )
 
 
@@ -96,7 +97,7 @@ class ConversationChatSettings:
             photo=ConversationsChatSettingsPhoto.of(d.get("photo")),
             acl=ConversationsChatSettingsAcl.of(d.get("acl")),
             pinned_message=models.Message.of(d.get("pinned_message")),
-            **utils.keys_excluded_dict(d, exclude_fields)
+            **utils.keys_excluded_dict(d, exclude_fields),
         )
 
 
@@ -131,7 +132,7 @@ class Conversation:
             push_settings=ConversationPushSettings.of(d.get("push_settings")),
             can_write=ConversationCanWrite.of(d.get("can_write")),
             chat_settings=ConversationChatSettings.of(d.get("chat_settings")),
-            **utils.keys_excluded_dict(d, exclude_fields)
+            **utils.keys_excluded_dict(d, exclude_fields),
         )
 
 
@@ -146,3 +147,18 @@ class ConversationItem:
             conversation=Conversation.of(d.get("conversation")),
             last_message=models.Message.of(d.get("last_message")),
         )
+
+
+class ConversationItemList(collections.UserList):
+    def peer_ids(self) -> list[int]:
+        return [item.conversation.peer.id for item in self]
+
+    def excluded_peers(
+        self, exclude_peers: t.Iterable[str] = frozenset()
+    ) -> t.Self:
+        exclude_peers = [utils.peer_id_from_sel(sel) for sel in exclude_peers]
+
+        def _is_peer_to_exclude(item: models.ConversationItem) -> bool:
+            return item.conversation.peer.id not in exclude_peers
+
+        return self.__class__(filter(_is_peer_to_exclude, self))

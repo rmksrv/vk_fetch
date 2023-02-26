@@ -1,5 +1,7 @@
 import typing as t
 
+from vk_fetch import constants
+
 
 def keys_excluded_dict(d: dict, keys: t.Iterable) -> dict:
     return {x: d[x] for x in d if x not in keys}
@@ -20,3 +22,9 @@ def none_on_throw(*exs: type[BaseException]):
         return _wrapper
 
     return _decorator
+
+
+def peer_id_from_sel(sel: str) -> int:
+    if sel.startswith("c"):
+        return constants.VK_GROUP_PEER_ID_SINCE + int(sel[1:])
+    return int(sel)

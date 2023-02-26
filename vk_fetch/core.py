@@ -7,7 +7,6 @@ from vk_fetch import constants
 
 
 class APIProvider:
-
     __slots__ = ("session", "executor", "tools")
 
     def __init__(self, session: vk.VkApi):
@@ -20,9 +19,11 @@ class APIProvider:
         cls,
         login: str,
         password: str,
-        scope: set[vk.VkUserPermissions] = constants.DEFAULT_USER_PERMISSIONS_SCOPE,
+        scope: set[
+            vk.VkUserPermissions
+        ] = constants.DEFAULT_USER_PERMISSIONS_SCOPE,
     ) -> t.Self:
-        session = vk.VkApi(login, password, scope=sum(scope))
+        session = vk.VkApi(login, password, scope=permissions_bitmask(scope))
         session.auth()
         logger.info("Successfully authenticated")
         return cls(session=session)
@@ -32,12 +33,14 @@ class APIProvider:
         cls,
         login: str,
         password: str,
-        scope: set[vk.VkUserPermissions] = constants.DEFAULT_USER_PERMISSIONS_SCOPE,
+        scope: set[
+            vk.VkUserPermissions
+        ] = constants.DEFAULT_USER_PERMISSIONS_SCOPE,
     ) -> t.Self:
         session = vk.VkApi(
             login,
             password,
-            scope=sum(scope),
+            scope=permissions_bitmask(scope),
             app_id=constants.KATE_MOBILE_APP_ID,
         )
         session.auth(token_only=True)
@@ -46,6 +49,6 @@ class APIProvider:
 
 
 def permissions_bitmask(
-    permissions: list[vk.VkUserPermissions] = vk.VkUserPermissions,
+    permissions: t.Iterable[vk.VkUserPermissions] = vk.VkUserPermissions,
 ) -> int:
     return sum(permissions)

@@ -1,3 +1,5 @@
+import typing as t
+
 import vk_api as vk
 
 from vk_fetch import models, constants, core
@@ -25,20 +27,25 @@ def photos(api: core.APIProvider) -> list[models.PhotoSize]:
     ]
 
 
-def conversations(api: core.APIProvider):
+def conversations(api: core.APIProvider) -> models.ConversationItemList:
     response = api.tools.get_all(
         "messages.getConversations", max_count=constants.VK_MAX_ITEMS_COUNT
     )
-    return [models.ConversationItem.of(item) for item in response.get("items")]
-
-
-def conversation_attachments(
-    api: core.APIProvider, peer_id: int, media_type: constants.MediaType
-) -> list[models.AttachmentItem]:
-    response = api.executor.messages.getHistoryAttachments(
-        peer_id=peer_id, media_type=media_type.value
+    return models.ConversationItemList(
+        models.ConversationItem.of(item) for item in response.get("items")
     )
-    return [models.AttachmentItem.of(item) for item in response.get("items")]
+
+
+def conversation_attachments_iter(
+    api: core.APIProvider, peer_id: int, media_type: constants.MediaType
+) -> t.Generator[models.AttachmentItem, None, None]:
+    response = api.tools.get_all_iter(
+        "messages.getHistoryAttachments",
+        100,
+        {"peer_id": peer_id, "media_type": media_type.value},
+    )
+    for item in response:
+        yield models.AttachmentItem.of(item)
 
 
 def _conversations_amount(api: core.APIProvider) -> int:
