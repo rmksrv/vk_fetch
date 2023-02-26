@@ -63,38 +63,3 @@ class ProfileInfo:
             country=d.get("country", {}).get("title"),
             **utils.keys_excluded_dict(d, exclude_fields)
         )
-
-
-@dc.dataclass(frozen=True, slots=True)
-class PhotoSize:
-    type: str
-    width: int
-    height: int
-    url: str
-
-    @classmethod
-    def of(cls, d: dict[str, t.Any]) -> t.Self:
-        return cls(**d)
-
-
-@dc.dataclass(frozen=True, slots=True)
-class Photo:
-    id: int
-    date: int
-    album_id: int
-    owner_id: int
-    sizes: list[PhotoSize]
-    text: str
-    post_id: int | None = None
-    square_crop: str | None = None
-
-    @classmethod
-    def of(cls, d: dict[str, t.Any]) -> t.Self:
-        return cls(
-            sizes=[PhotoSize.of(s) for s in d.get("sizes")],
-            **utils.keys_excluded_dict(d, ["sizes"])
-        )
-
-    @property
-    def highest_quality(self) -> PhotoSize:
-        return sorted(self.sizes, key=lambda s: s.width)[-1]

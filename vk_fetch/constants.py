@@ -1,7 +1,19 @@
 import enum
 
+import vk_api as vk
 
+
+VK_MAX_ITEMS_COUNT = 200
 KATE_MOBILE_APP_ID = 2685278
+
+DEFAULT_USER_PERMISSIONS_SCOPE = frozenset(
+    [
+        vk.VkUserPermissions.MESSAGES,
+        vk.VkUserPermissions.PHOTOS,
+        vk.VkUserPermissions.STATUS,
+        vk.VkUserPermissions.VIDEO,
+    ]
+)
 
 
 class MediaType(enum.Enum):
@@ -39,3 +51,16 @@ class Relation(enum.Enum):
     CivilMarriage = 8
     # не указано
     Undefined = 0
+
+
+class ConversationType(enum.Enum):
+    User = "user"
+    Chat = "chat"
+    Group = "group"
+    Email = "email"
+
+
+class ConversationState(enum.Enum):
+    In = "in"
+    Kicked = "kicked"
+    Left = "left"

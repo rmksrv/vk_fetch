@@ -1,3 +1,5 @@
+import typing as t
+
 import vk_api as vk
 from loguru import logger
 
@@ -5,40 +7,42 @@ from vk_fetch import constants
 
 
 class APIProvider:
-    DEFAULT_USER_SCOPE = frozenset(
-        [
-            vk.VkUserPermissions.MESSAGES,
-            vk.VkUserPermissions.PHOTOS,
-            vk.VkUserPermissions.STATUS,
-            vk.VkUserPermissions.VIDEO,
-        ]
-    )
+
+    __slots__ = ("session", "executor", "tools")
+
+    def __init__(self, session: vk.VkApi):
+        self.session = session
+        self.executor = session.get_api()
+        self.tools = vk.VkTools(session)
 
     @classmethod
     def basic(
         cls,
         login: str,
         password: str,
-        scope: set[vk.VkUserPermissions] = DEFAULT_USER_SCOPE,
-    ) -> vk.vk_api.VkApiMethod:
+        scope: set[vk.VkUserPermissions] = constants.DEFAULT_USER_PERMISSIONS_SCOPE,
+    ) -> t.Self:
         session = vk.VkApi(login, password, scope=sum(scope))
         session.auth()
         logger.info("Successfully authenticated")
-        return session.get_api()
+        return cls(session=session)
 
     @classmethod
     def kate_mobile(
         cls,
         login: str,
         password: str,
-        scope: set[vk.VkUserPermissions] = DEFAULT_USER_SCOPE,
-    ) -> vk.vk_api.VkApiMethod:
+        scope: set[vk.VkUserPermissions] = constants.DEFAULT_USER_PERMISSIONS_SCOPE,
+    ) -> t.Self:
         session = vk.VkApi(
-            login, password, scope=sum(scope), app_id=constants.KATE_MOBILE_APP_ID
+            login,
+            password,
+            scope=sum(scope),
+            app_id=constants.KATE_MOBILE_APP_ID,
         )
         session.auth(token_only=True)
         logger.info("Successfully authenticated")
-        return session.get_api()
+        return cls(session=session)
 
 
 def permissions_bitmask(

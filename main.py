@@ -11,7 +11,9 @@ app = typer.Typer(name="vk_fetch", help=__doc__)
 
 @app.command()
 def ping(
-    login: str = typer.Option(..., help="Login from VK account (e-mail/phone)"),
+    login: str = typer.Option(
+        ..., help="Login from VK account (e-mail/phone)"
+    ),
     password: str = typer.Option(..., help="Password from VK account "),
 ) -> None:
     """
@@ -25,7 +27,9 @@ def ping(
 
 @app.command()
 def show(
-    login: str = typer.Option(..., help="Login from VK account (e-mail/phone)"),
+    login: str = typer.Option(
+        ..., help="Login from VK account (e-mail/phone)"
+    ),
     password: str = typer.Option(..., help="Password from VK account "),
 ) -> None:
     """
