@@ -20,7 +20,7 @@ def ping(
     logger.info("Provided params:")
     logger.info(f"  login:\t{login}")
     logger.info(f"  password:\t{password}")
-    core.new_api(login, password)
+    core.APIProvider.kate_mobile(login, password)
 
 
 @app.command()
