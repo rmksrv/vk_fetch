@@ -1,6 +1,9 @@
 import enum
 
 
+KATE_MOBILE_APP_ID = 2685278
+
+
 class MediaType(enum.Enum):
     Photo = "photo"
     Video = "video"

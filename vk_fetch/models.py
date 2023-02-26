@@ -8,26 +8,40 @@ from vk_fetch import utils, constants
 
 
 @dc.dataclass(frozen=True, slots=True)
+class ChangeNameRequest:
+    id: int
+    status: str
+    first_name: str
+    last_name: str
+
+    @classmethod
+    def of(cls, d: dict[str, t.Any]) -> t.Self:
+        return cls(**d)
+
+
+@dc.dataclass(frozen=True, slots=True)
 class ProfileInfo:
     id: int
+    first_name: str
+    last_name: str
     home_town: str
     status: str
     is_tinkoff_linked: bool
     is_tinkoff_verified: bool
     is_sber_verified: bool
-    first_name: str
-    last_name: str
     bdate: dt.datetime
     bdate_visibility: bool
     phone: str
-    relation: constants.Relation
     sex: constants.Sex
+    maiden_name: str | None = None
+    screen_name: str | None = None
     city: str | None = None
     country: str | None = None
+    relation: constants.Relation = constants.Relation.Undefined
     is_service_account: bool = False
     is_esia_verified: bool = False
     is_esia_linked: bool = False
-    screen_name: str | None = None
+    name_request: ChangeNameRequest | None = None
 
     @classmethod
     def of(cls, d: dict[str, t.Any]) -> t.Self:
