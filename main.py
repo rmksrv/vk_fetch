@@ -36,7 +36,9 @@ def show(
     logger.info("Fetched info")
     logger.info(profile_info)
     photos = fetchers.photos(api)
-    logger.info(photos)
+    logger.info("Fetched photos")
+    for p in photos:
+        logger.info(p)
 
 
 if __name__ == "__main__":

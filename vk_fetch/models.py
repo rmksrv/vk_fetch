@@ -19,23 +19,35 @@ class ProfileInfo:
     last_name: str
     bdate: dt.datetime
     bdate_visibility: bool
-    city: str
-    country: str
     phone: str
     relation: constants.Relation
     sex: constants.Sex
+    city: str | None = None
+    country: str | None = None
+    is_service_account: bool = False
+    is_esia_verified: bool = False
+    is_esia_linked: bool = False
+    screen_name: str | None = None
 
     @classmethod
     def of(cls, d: dict[str, t.Any]) -> t.Self:
+        exclude_fields = [
+            "bdate",
+            "relation",
+            "sex",
+            "city",
+            "country",
+            "relation_partner",
+            "relation_requests",
+            "photo_200",
+        ]
         return cls(
             bdate=dateutil.parser.parse(d.get("bdate")),
             relation=constants.Relation(d.get("relation")),
             sex=constants.Sex(d.get("sex")),
-            city=d.get("city").get("title"),
-            country=d.get("country").get("title"),
-            **utils.keys_excluded_dict(
-                d, ["bdate", "relation", "sex", "city", "country"]
-            )
+            city=d.get("city", {}).get("title"),
+            country=d.get("country", {}).get("title"),
+            **utils.keys_excluded_dict(d, exclude_fields)
         )
 
 
@@ -57,10 +69,10 @@ class Photo:
     date: int
     album_id: int
     owner_id: int
-    post_id: int
     sizes: list[PhotoSize]
-    square_crop: str
     text: str
+    post_id: int | None = None
+    square_crop: str | None = None
 
     @classmethod
     def of(cls, d: dict[str, t.Any]) -> t.Self:
