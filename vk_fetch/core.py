@@ -6,9 +6,9 @@ import typing as t
 
 import requests
 import vk_api as vk
-from loguru import logger
 
 from vk_fetch import constants, utils
+from vk_fetch.logging import log
 
 
 class APIProvider:
@@ -30,7 +30,7 @@ class APIProvider:
     ) -> t.Self:
         session = vk.VkApi(login, password, scope=permissions_bitmask(scope))
         session.auth()
-        logger.info("Successfully authenticated")
+        log("  Successfully authenticated ✅ .")
         return cls(session=session)
 
     @classmethod
@@ -49,7 +49,7 @@ class APIProvider:
             app_id=constants.KATE_MOBILE_APP_ID,
         )
         session.auth(token_only=True)
-        logger.info("Successfully authenticated")
+        log("  Successfully authenticated ✅ .")
         return cls(session=session)
 
 
