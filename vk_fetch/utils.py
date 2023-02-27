@@ -1,8 +1,7 @@
 import typing as t
 
-from loguru import logger
-
 from vk_fetch import constants
+from vk_fetch.logging import log
 
 
 def keys_excluded_dict(d: dict, keys: t.Iterable) -> dict:
@@ -33,11 +32,6 @@ def peer_id_from_sel(sel: str) -> int:
 
 def yes_or_no(v: bool) -> str:
     return "yes" if v else "no"
-
-
-def log_if_present(k: str, v: t.Any | None) -> None:
-    if v:
-        logger.info(f"  {k + ':':<25} {v}")
 
 
 def crop_url_to_filename(url: str) -> str:

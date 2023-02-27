@@ -1,9 +1,8 @@
 import abc
 import typing as t
 
-from loguru import logger
-
 from vk_fetch import core, fetchers
+from vk_fetch.logging import log
 
 
 class VkFetchJob(abc.ABC):
@@ -21,8 +20,8 @@ class VkFetchJob(abc.ABC):
 class CheckPermissionsJob(VkFetchJob):
     def run(self) -> None:
         permissions = fetchers.granted_permissions(self.api)
-        logger.info("Granted permissions:")
-        logger.info(permissions)
+        log("Granted permissions:")
+        log(permissions)
 
 
 def run_all(jobs: t.Iterable[VkFetchJob]) -> None:

@@ -1,11 +1,7 @@
-from loguru import logger
-
 from vk_fetch import fetchers
 from vk_fetch.jobs import base
-from vk_fetch.utils import (
-    log_if_present as log,
-    yes_or_no,
-)
+from vk_fetch.logging import log, kvlog_if_present
+from vk_fetch.utils import yes_or_no
 
 
 DATETIME_FORMAT = "%Y-%m-%d"
@@ -14,21 +10,29 @@ DATETIME_FORMAT = "%Y-%m-%d"
 class ShowProfileJob(base.VkFetchJob):
     def run(self) -> None:
         profile = fetchers.profile_info(self.api)
-        logger.info("Profile info fetched")
-        log("ID", profile.id)
-        log("Full name", profile.full_name())
-        log("Screen name", profile.screen_name)
-        log("Birthdate", profile.bdate.strftime(DATETIME_FORMAT))
-        log("Is birthdate visible", profile.bdate_visibility)
-        log("Status", profile.status)
-        log("Sex", profile.sex)
-        log("City", profile.city)
-        log("Country", profile.country)
-        log("Home town", profile.home_town)
-        log("Phone", profile.phone)
-        log("Relation", profile.relation)
-        log("Is Tinkoff linked", yes_or_no(profile.is_tinkoff_linked))
-        log("Is Tinkoff verified", yes_or_no(profile.is_tinkoff_verified))
-        log("Is Sber verified", yes_or_no(profile.is_sber_verified))
-        log("Is Esia linked", yes_or_no(profile.is_esia_linked))
-        log("Is Esia verified", yes_or_no(profile.is_esia_verified))
+        log("Profile info fetched")
+        kvlog_if_present("ID", profile.id)
+        kvlog_if_present("Full name", profile.full_name())
+        kvlog_if_present("Screen name", profile.screen_name)
+        kvlog_if_present("Birthdate", profile.bdate.strftime(DATETIME_FORMAT))
+        kvlog_if_present("Is birthdate visible", profile.bdate_visibility)
+        kvlog_if_present("Status", profile.status)
+        kvlog_if_present("Sex", profile.sex)
+        kvlog_if_present("City", profile.city)
+        kvlog_if_present("Country", profile.country)
+        kvlog_if_present("Home town", profile.home_town)
+        kvlog_if_present("Phone", profile.phone)
+        kvlog_if_present("Relation", profile.relation)
+        kvlog_if_present(
+            "Is Tinkoff linked", yes_or_no(profile.is_tinkoff_linked)
+        )
+        kvlog_if_present(
+            "Is Tinkoff verified", yes_or_no(profile.is_tinkoff_verified)
+        )
+        kvlog_if_present(
+            "Is Sber verified", yes_or_no(profile.is_sber_verified)
+        )
+        kvlog_if_present("Is Esia linked", yes_or_no(profile.is_esia_linked))
+        kvlog_if_present(
+            "Is Esia verified", yes_or_no(profile.is_esia_verified)
+        )

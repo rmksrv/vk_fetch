@@ -1,3 +1,5 @@
 .idea/
 vk_config.v2.json
 sandbox.py
+logs/
+dumps/

@@ -5,6 +5,7 @@ import vk_api as vk
 
 
 PROJECT_ROOT = pathlib.Path(__file__).parent.parent
+LOGS_PATH = PROJECT_ROOT / "logs"
 DEFAULT_USER_PERMISSIONS_SCOPE = frozenset(
     [
         vk.VkUserPermissions.MESSAGES,

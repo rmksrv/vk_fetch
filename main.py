@@ -5,11 +5,12 @@ import pathlib
 
 import rich.progress
 import typer
-from loguru import logger
 
 from vk_fetch import core, jobs
+from vk_fetch.logging import configure_logger, log
 
 app = typer.Typer(name="vk_fetch", help=__doc__)
+configure_logger()
 
 
 @app.command()
@@ -22,9 +23,9 @@ def ping(
     """
     Check app can connect to VK and auth as user with login/pass
     """
-    logger.info("Provided params:")
-    logger.info(f"  login:\t{login}")
-    logger.info(f"  password:\t{password}")
+    log("Provided params:")
+    log(f"  login:\t{login}")
+    log(f"  password:\t{password}")
     api = core.APIProvider.kate_mobile(login, password)
     jobs.base.CheckPermissionsJob(api).run()
 
@@ -37,7 +38,7 @@ def show(
     password: str = typer.Option(..., help="Password from VK account "),
 ) -> None:
     """
-    Show all profile info to stdout
+    Show all profile info
     """
     api = core.APIProvider.kate_mobile(login, password)
     to_execute = [
@@ -67,6 +68,9 @@ def download(
         default="dumps", help="Path where all fetched data will be written"
     ),
 ) -> None:
+    """
+    Download all data and media of VK profile
+    """
     destination = pathlib.Path(destination)
     api = core.APIProvider.kate_mobile(login, password)
     to_execute = [
@@ -85,7 +89,6 @@ def download(
         ) as progress:
             progress.add_task(description=description, total=None)
             job.run()
-    # jobs.run_all(to_execute)
 
 
 if __name__ == "__main__":

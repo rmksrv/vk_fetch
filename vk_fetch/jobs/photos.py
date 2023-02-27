@@ -1,10 +1,8 @@
 import pathlib
 
-from loguru import logger
-
 from vk_fetch import fetchers, models, core, constants
 from vk_fetch.jobs import base
-from vk_fetch.utils import log_if_present as log
+from vk_fetch.logging import log, kvlog_if_present
 
 
 class ShowPhotosJob(base.VkFetchJob):
@@ -15,12 +13,12 @@ class ShowPhotosJob(base.VkFetchJob):
 
     @staticmethod
     def log_photo(photo: models.Photo) -> None:
-        logger.info(f"Photo(ID={photo.id})")
-        log("Date", photo.date)
-        log("Album ID", photo.album_id)
-        log("Owner ID", photo.owner_id)
-        log("Highest res URL", photo.highest_quality().url)
-        log("Text", photo.text)
+        log(f"Photo(ID={photo.id})")
+        kvlog_if_present("Date", photo.date)
+        kvlog_if_present("Album ID", photo.album_id)
+        kvlog_if_present("Owner ID", photo.owner_id)
+        kvlog_if_present("Highest res URL", photo.highest_quality().url)
+        kvlog_if_present("Text", photo.text)
 
 
 class DownloadPhotosJob(base.VkFetchJob):
