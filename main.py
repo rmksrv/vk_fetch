@@ -1,5 +1,5 @@
 """
-TODO: write docstr
+App for downloading data from VK
 """
 import pathlib
 

@@ -1,7 +1,7 @@
 import abc
 import typing as t
 
-from vk_fetch import core, fetchers
+from vk_fetch import core, fetchers, utils
 from vk_fetch.logging import log
 
 
@@ -24,9 +24,11 @@ class CheckPermissionsJob(VkFetchJob):
 
     def run(self) -> None:
         permissions = fetchers.granted_permissions(self.api)
+        permissions_strs = [
+            utils.vk_permission_str(perm) for perm in permissions
+        ]
         if not self.silent:
-            log("Granted permissions:")
-            log(permissions)
+            log(f"Granted permissions: {permissions_strs}")
 
 
 def run_all(jobs: t.Iterable[VkFetchJob]) -> None:

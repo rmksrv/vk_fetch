@@ -61,7 +61,7 @@ class ProfileInfo:
             sex=constants.Sex(d.get("sex")),
             city=d.get("city", {}).get("title"),
             country=d.get("country", {}).get("title"),
-            **utils.keys_excluded_dict(d, exclude_fields)
+            **utils.keys_excluded_dict(d, exclude_fields),
         )
 
     def full_name(self) -> str:

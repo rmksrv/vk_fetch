@@ -1,7 +1,8 @@
 import typing as t
 
+import vk_api.vk_api
+
 from vk_fetch import constants
-from vk_fetch.logging import log
 
 
 def keys_excluded_dict(d: dict, keys: t.Iterable) -> dict:
@@ -37,3 +38,7 @@ def yes_or_no(v: bool) -> str:
 def crop_url_to_filename(url: str) -> str:
     no_root = url.split("/")[-1]
     return no_root.split("?")[0]
+
+
+def vk_permission_str(p: vk_api.vk_api.VkUserPermissions) -> str:
+    return p.name

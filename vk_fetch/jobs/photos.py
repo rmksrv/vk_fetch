@@ -8,12 +8,13 @@ from vk_fetch.logging import log, kvlog_if_present
 class ShowPhotosJob(base.VkFetchJob):
     def run(self) -> None:
         photos = fetchers.photos(self.api)
+        log("Photos fetched")
         for photo in photos:
             ShowPhotosJob.log_photo(photo)
 
     @staticmethod
     def log_photo(photo: models.Photo) -> None:
-        log(f"Photo(ID={photo.id})")
+        log(f"  Photo(ID={photo.id})")
         kvlog_if_present("Date", photo.date)
         kvlog_if_present("Album ID", photo.album_id)
         kvlog_if_present("Owner ID", photo.owner_id)

@@ -43,12 +43,16 @@ class Photo:
         return sorted(self.sizes, key=lambda s: s.width)[-1]
 
     def download_item(self, destination: pathlib.Path) -> core.DownloadItem:
-        return core.DownloadItem(url=self.highest_quality().url, destination=destination)
+        return core.DownloadItem(
+            url=self.highest_quality().url, destination=destination
+        )
 
 
 class PhotoList(collections.UserList):
     def highest_quality_urls(self) -> list[str]:
         return [photo.highest_quality().url for photo in self]
 
-    def download_items(self, destination: pathlib.Path) -> list[core.DownloadItem]:
+    def download_items(
+        self, destination: pathlib.Path
+    ) -> list[core.DownloadItem]:
         return [photo.download_item(destination) for photo in self]
