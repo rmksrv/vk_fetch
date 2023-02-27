@@ -17,14 +17,13 @@ def profile_info(api: core.APIProvider) -> models.ProfileInfo:
     return models.ProfileInfo.of(response)
 
 
-def photos(api: core.APIProvider) -> list[models.PhotoSize]:
+def photos(api: core.APIProvider) -> models.PhotoList:
     response = api.tools.get_all(
         "photos.getAll", max_count=constants.VK_MAX_ITEMS_COUNT
     )
-    return [
-        models.Photo.of(item).highest_quality()
-        for item in response.get("items")
-    ]
+    return models.PhotoList(
+        models.Photo.of(item) for item in response.get("items")
+    )
 
 
 def conversations(api: core.APIProvider) -> models.ConversationItemList:

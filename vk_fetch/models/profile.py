@@ -63,3 +63,9 @@ class ProfileInfo:
             country=d.get("country", {}).get("title"),
             **utils.keys_excluded_dict(d, exclude_fields)
         )
+
+    def full_name(self) -> str:
+        full_name = f"{self.first_name} {self.last_name}"
+        if self.maiden_name:
+            full_name += f" ({self.maiden_name})"
+        return full_name

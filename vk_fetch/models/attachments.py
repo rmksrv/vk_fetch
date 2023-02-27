@@ -1,4 +1,5 @@
 import dataclasses as dc
+import datetime as dt
 import typing as t
 
 from vk_fetch import constants, utils, models
@@ -26,7 +27,7 @@ class Attachment:
 @dc.dataclass(frozen=True, slots=True)
 class AttachmentItem:
     message_id: int
-    date: int
+    date: dt.datetime
     from_id: int
     cmid: int
     attachment: Attachment
@@ -36,5 +37,6 @@ class AttachmentItem:
     def of(cls, d: dict[str, t.Any]) -> t.Self:
         return cls(
             attachment=Attachment.of(d.get("attachment")),
-            **utils.keys_excluded_dict(d, ["attachment"])
+            date=dt.datetime.fromtimestamp(int(d.get("date"))),
+            **utils.keys_excluded_dict(d, ["attachment", "date"])
         )

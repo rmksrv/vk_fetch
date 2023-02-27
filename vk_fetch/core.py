@@ -1,9 +1,14 @@
+import concurrent.futures
+import dataclasses as dc
+import http
+import pathlib
 import typing as t
 
+import requests
 import vk_api as vk
 from loguru import logger
 
-from vk_fetch import constants
+from vk_fetch import constants, utils
 
 
 class APIProvider:
@@ -52,3 +57,55 @@ def permissions_bitmask(
     permissions: t.Iterable[vk.VkUserPermissions] = vk.VkUserPermissions,
 ) -> int:
     return sum(permissions)
+
+
+@dc.dataclass(frozen=True, slots=True)
+class DownloadItem:
+    url: str
+    destination: pathlib.Path
+
+    def download(self) -> constants.DownloadStatus:
+        download_file_path = (
+            self.destination.resolve() / utils.crop_url_to_filename(self.url)
+        )
+        resp = requests.get(self.url, stream=True)
+        match resp.status_code:
+            case http.HTTPStatus.OK:
+                download_file_path.parent.mkdir(parents=True, exist_ok=True)
+                try:
+                    with download_file_path.open("wb") as buf:
+                        for chunk in resp:
+                            buf.write(chunk)
+                    return constants.DownloadStatus.Success
+                except Exception:
+                    return constants.DownloadStatus.Failed
+            case _:
+                return constants.DownloadStatus.Failed
+
+
+@dc.dataclass(slots=True)
+class DownloadResult:
+    succeed: list[DownloadItem] = dc.field(default_factory=list)
+    failed: list[DownloadItem] = dc.field(default_factory=list)
+
+
+def download_files_parallel(
+    items: t.Iterable[DownloadItem], max_workers: int = 5
+) -> DownloadResult:
+    result = DownloadResult()
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=max_workers
+    ) as executor:
+        future_to_download_result = {
+            executor.submit(item.download): item for item in items
+        }
+        for future in concurrent.futures.as_completed(
+            future_to_download_result
+        ):
+            item = future_to_download_result[future]
+            match future.result():
+                case constants.DownloadStatus.Success:
+                    result.succeed.append(item)
+                case constants.DownloadStatus.Failed:
+                    result.failed.append(item)
+    return result
