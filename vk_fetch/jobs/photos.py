@@ -36,4 +36,7 @@ class DownloadPhotosJob(base.VkFetchJob):
             photos.download_items(self.destination)
         )
         if download_results.failed:
-            pass
+            log("Some of photos were not downloaded:")
+            for item in download_results.failed:
+                log(f" - {item.url}")
+        log(f"  Downloaded photos: {len(download_results.succeed)}")

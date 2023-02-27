@@ -6,7 +6,7 @@ import pathlib
 import rich.progress
 import typer
 
-from vk_fetch import core, jobs
+from vk_fetch import core, jobs, constants
 from vk_fetch.logging import configure_logger, log
 
 app = typer.Typer(name="vk_fetch", help=__doc__)
@@ -47,15 +47,6 @@ def show(
         jobs.photos.ShowPhotosJob(api),
     ]
     jobs.run_all(to_execute)
-    # to_exclude = []
-    # convs = fetchers.conversations(api).excluded_peers(to_exclude)
-    # for peer_id in convs.peer_ids():
-    #     logger.info(f"Fetched photos of conversation(peer_id={peer_id})")
-    #     attachment_items = fetchers.conversation_attachments_iter(
-    #         api, peer_id, constants.MediaType.Photo
-    #     )
-    #     for aitem in attachment_items:
-    #         logger.info(aitem.attachment.photo.highest_quality())
 
 
 @app.command()
@@ -64,18 +55,24 @@ def download(
         ..., help="Login from VK account (e-mail/phone)"
     ),
     password: str = typer.Option(..., help="Password from VK account "),
-    destination: str = typer.Option(
-        default="dumps", help="Path where all fetched data will be written"
+    destination: pathlib.Path = typer.Option(
+        default=constants.DEFAULT_DESTINATION_PATH,
+        help="Path where all fetched data will be written",
     ),
 ) -> None:
     """
     Download all data and media of VK profile
     """
     destination = pathlib.Path(destination)
+    photos_destination = destination / "photos"
     api = core.APIProvider.kate_mobile(login, password)
     to_execute = [
         (
-            jobs.photos.DownloadPhotosJob(api, destination),
+            jobs.base.CheckPermissionsJob(api, silent=True),
+            "Checking permissions...",
+        ),
+        (
+            jobs.photos.DownloadPhotosJob(api, photos_destination),
             "Downloading photos...",
         ),
     ]

@@ -14,7 +14,7 @@ DEFAULT_USER_PERMISSIONS_SCOPE = frozenset(
         vk.VkUserPermissions.VIDEO,
     ]
 )
-DEFAULT_DESTINATION_PATH = pathlib.Path.cwd() / "vk_fetch_downloads"
+DEFAULT_DESTINATION_PATH = pathlib.Path(".") / "vk_fetch_downloads"
 
 VK_MAX_ITEMS_COUNT = 200
 VK_GROUP_PEER_ID_SINCE = 2000000000
