@@ -8,7 +8,11 @@ from vk_fetch import constants
 
 def configure_logger() -> None:
     logger.remove(0)
-    logger.add(constants.LOGS_PATH / "file_{time}.log")
+    logger.add(
+        constants.LOGS_PATH / "file_{time}.log",
+        colorize=False,
+        format="{time} | {level:<7} | {message}"
+    )
 
 
 def log(s: t.Any, level: str = "INFO") -> None:

@@ -1,12 +1,12 @@
 """
-App for downloading data from VK
+Script helps to fetch all data from your VK account
 """
 import pathlib
 
 import rich.progress
 import typer
 
-from vk_fetch import core, jobs, constants
+from vk_fetch import core, jobs, constants, fetchers
 from vk_fetch.logging import configure_logger, log
 
 app = typer.Typer(name="vk_fetch", help=__doc__)
@@ -43,7 +43,7 @@ def show(
     api = core.APIProvider.kate_mobile(login, password)
     to_execute = [
         jobs.base.CheckPermissionsJob(api),
-        jobs.profile.ShowProfileJob(api),
+        jobs.profile.ShowProfileInfoJob(api),
         jobs.photos.ShowPhotosJob(api),
     ]
     jobs.run_all(to_execute)
@@ -66,6 +66,11 @@ def download(
     destination = pathlib.Path(destination)
     photos_destination = destination / "photos"
     api = core.APIProvider.kate_mobile(login, password)
+    peer_ids = [pid for pid in fetchers.conversations(api).peer_ids()]
+    media_types = [
+        constants.MediaType.Audio,
+        constants.MediaType.Photo,
+    ]
     to_execute = [
         (
             jobs.base.CheckPermissionsJob(api, silent=True),
@@ -74,6 +79,9 @@ def download(
         (
             jobs.photos.DownloadPhotosJob(api, photos_destination),
             "Downloading photos...",
+        ),
+        *jobs.conversations.DownloadConversationAttachmentsJob.batch_with_description(
+            api, peer_ids, photos_destination, media_types
         ),
     ]
     for job, description in to_execute:

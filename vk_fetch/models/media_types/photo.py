@@ -30,13 +30,21 @@ class Photo:
     access_key: str | None = None
     post_id: int | None = None
     square_crop: str | None = None
+    lat: float | None = None
+    long: float | None = None
+
+    def __str__(self):
+        return f"Photo {self.highest_quality().url}"
+
+    def __hash__(self):
+        return self.id
 
     @classmethod
     @utils.none_on_throw(AttributeError)
     def of(cls, d: dict[str, t.Any]) -> t.Self:
         return cls(
             sizes=[PhotoSize.of(s) for s in d.get("sizes")],
-            **utils.keys_excluded_dict(d, ["sizes"])
+            **utils.keys_excluded_dict(d, ["sizes"]),
         )
 
     def highest_quality(self) -> PhotoSize:

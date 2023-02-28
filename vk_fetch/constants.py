@@ -3,7 +3,6 @@ import pathlib
 
 import vk_api as vk
 
-
 PROJECT_ROOT = pathlib.Path(__file__).parent.parent
 LOGS_PATH = PROJECT_ROOT / "logs"
 DEFAULT_USER_PERMISSIONS_SCOPE = frozenset(
@@ -34,6 +33,12 @@ class MediaType(enum.Enum):
     Link = "link"
     Market = "market"
     Wall = "wall"
+    Poll = "poll"
+    Gift = "gift"
+    Sticker = "sticker"
+
+
+DEFAULT_CONVERSATION_MEDIA_TYPES = frozenset(MediaType)
 
 
 class Sex(enum.Enum):

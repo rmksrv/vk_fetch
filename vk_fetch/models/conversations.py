@@ -87,6 +87,7 @@ class ConversationChatSettings:
     acl: ConversationsChatSettingsAcl
     is_service: bool
     pinned_message: models.Message | None = None
+    short_poll_reactions: bool | None = None
 
     @classmethod
     @utils.none_on_throw(AttributeError)

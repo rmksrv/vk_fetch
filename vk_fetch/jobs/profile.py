@@ -7,7 +7,7 @@ from vk_fetch.utils import yes_or_no
 DATETIME_FORMAT = "%Y-%m-%d"
 
 
-class ShowProfileJob(base.VkFetchJob):
+class ShowProfileInfoJob(base.VkFetchJob):
     def run(self) -> None:
         profile = fetchers.profile_info(self.api)
         log("Profile info fetched")

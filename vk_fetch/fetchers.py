@@ -2,7 +2,8 @@ import typing as t
 
 import vk_api as vk
 
-from vk_fetch import models, constants, core
+from vk_fetch import constants, core, models
+from vk_fetch.models import media_types
 
 
 def granted_permissions(api: core.APIProvider) -> list[vk.VkUserPermissions]:
@@ -17,12 +18,12 @@ def profile_info(api: core.APIProvider) -> models.ProfileInfo:
     return models.ProfileInfo.of(response)
 
 
-def photos(api: core.APIProvider) -> models.PhotoList:
+def photos(api: core.APIProvider) -> media_types.PhotoList:
     response = api.tools.get_all(
         "photos.getAll", max_count=constants.VK_MAX_ITEMS_COUNT
     )
-    return models.PhotoList(
-        models.Photo.of(item) for item in response.get("items")
+    return media_types.PhotoList(
+        media_types.Photo.of(item) for item in response.get("items")
     )
 
 
@@ -38,13 +39,24 @@ def conversations(api: core.APIProvider) -> models.ConversationItemList:
 def conversation_attachments_iter(
     api: core.APIProvider, peer_id: int, media_type: constants.MediaType
 ) -> t.Generator[models.AttachmentItem, None, None]:
-    response = api.tools.get_all_iter(
-        "messages.getHistoryAttachments",
-        100,
-        {"peer_id": peer_id, "media_type": media_type.value},
+    response = api.executor.messages.getHistoryAttachments(
+        peer_id=peer_id, media_type=media_type.value, max_count=1
     )
-    for item in response:
-        yield models.AttachmentItem.of(item)
+    next_from = response.get("next_from")
+    items = response.get("items")
+
+    while next_from or items:
+        for item in items:
+            yield models.AttachmentItem.of(item)
+
+        response = api.executor.messages.getHistoryAttachments(
+            peer_id=peer_id,
+            media_type=media_type.value,
+            max_count=1,
+            start_from=next_from,
+        )
+        next_from = response.get("next_from")
+        items = response.get("items")
 
 
 def _conversations_amount(api: core.APIProvider) -> int:
