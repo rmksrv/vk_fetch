@@ -38,7 +38,7 @@ class MediaType(enum.Enum):
     Sticker = "sticker"
 
 
-DEFAULT_CONVERSATION_MEDIA_TYPES = frozenset(MediaType)
+DEFAULT_CONVERSATION_MEDIA_TYPES = frozenset([MediaType.Photo])
 
 
 class Sex(enum.Enum):

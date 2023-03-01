@@ -1,12 +1,10 @@
 import dataclasses as dc
 import datetime as dt
+import pathlib
 import typing as t
 
-from vk_fetch import constants, utils
+from vk_fetch import constants, utils, core
 from vk_fetch.models import media_types
-
-
-AttachmentContent = media_types.Audio | media_types.Photo | dict
 
 
 @dc.dataclass(frozen=True, slots=True)
@@ -29,22 +27,14 @@ class Attachment:
             **utils.keys_excluded_dict(d, ["photo", "audio", "type"]),
         )
 
-    def content(self) -> AttachmentContent:
+    def content(self) -> media_types.Media:
         match self.type:
             case constants.MediaType.Photo:
                 return self.photo
             case constants.MediaType.Audio:
                 return self.audio
-            case constants.MediaType.Video:
-                return self.video
-            case constants.MediaType.Doc:
-                return self.doc
-            case constants.MediaType.Link:
-                return self.link
-            case constants.MediaType.Market:
-                return self.market
-            case constants.MediaType.Wall:
-                return self.wall
+            case _:
+                raise NotImplemented
 
 
 @dc.dataclass(frozen=True, slots=True)
@@ -63,3 +53,6 @@ class AttachmentItem:
             date=dt.datetime.fromtimestamp(int(d.get("date"))),
             **utils.keys_excluded_dict(d, ["attachment", "date"]),
         )
+
+    def download_item(self, destination: pathlib.Path) -> core.DownloadItem:
+        return self.attachment.content().download_item(destination)

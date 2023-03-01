@@ -1,4 +1,6 @@
+import dataclasses as dc
 import typing as t
+import functools
 
 import vk_api.vk_api
 
@@ -42,3 +44,19 @@ def crop_url_to_filename(url: str) -> str:
 
 def vk_permission_str(p: vk_api.vk_api.VkUserPermissions) -> str:
     return p.name
+
+
+@dc.dataclass(slots=True)
+class AttachmentsCounter:
+    uniques: int = 0
+    duplicates: int = 0
+
+    @classmethod
+    def sum(cls, _it: t.Iterable["AttachmentsCounter"]) -> t.Self:
+        return functools.reduce(cls.__add__, _it)
+
+    def __add__(self, other: t.Self) -> t.Self:
+        return AttachmentsCounter(
+            uniques=self.uniques + other.uniques,
+            duplicates=self.duplicates + other.duplicates,
+        )

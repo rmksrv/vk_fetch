@@ -1,8 +1,10 @@
 import dataclasses as dc
 import datetime as dt
+import pathlib
 import typing as t
 
-from vk_fetch import utils
+from vk_fetch import utils, core
+from vk_fetch.models.media_types import media
 
 
 @dc.dataclass(frozen=True, slots=True)
@@ -20,7 +22,7 @@ class AudioAds:
 
 
 @dc.dataclass(frozen=True, slots=True)
-class Audio:
+class Audio(media.Media):
     id: int
     artist: str
     owner_id: int
@@ -54,6 +56,9 @@ class Audio:
             ads=AudioAds.of(d.get("ads")),
             **utils.keys_excluded_dict(d, exclude_fields),
         )
+
+    def download_item(self, destination: pathlib.Path) -> core.DownloadItem:
+        raise NotImplemented
 
     def __hash__(self):
         return hash(self.id)

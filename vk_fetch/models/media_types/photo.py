@@ -4,6 +4,7 @@ import pathlib
 import typing as t
 
 from vk_fetch import utils, core
+from vk_fetch.models.media_types import media
 
 
 @dc.dataclass(frozen=True, slots=True)
@@ -19,7 +20,7 @@ class PhotoSize:
 
 
 @dc.dataclass(frozen=True, slots=True)
-class Photo:
+class Photo(media.Media):
     id: int
     date: int
     album_id: int
