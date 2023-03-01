@@ -1,7 +1,7 @@
 import abc
 import pathlib
 
-from vk_fetch import core
+from src import core
 
 
 class Media(abc.ABC):

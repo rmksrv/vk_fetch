@@ -1,9 +1,9 @@
 import pathlib
 import typing as t
 
-from vk_fetch import core, constants, fetchers, models, utils
-from vk_fetch.jobs import base
-from vk_fetch.logging import log
+from src import core, constants, fetchers, models, utils
+from src.jobs import base
+from src.logging import log
 
 
 class ShowConversationAttachmentsJob(base.VkFetchJob):

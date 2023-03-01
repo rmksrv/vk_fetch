@@ -3,7 +3,7 @@ import pathlib
 import rich.progress
 import typer
 
-from vk_fetch import constants, core, utils, fetchers, jobs
+from src import constants, core, utils, fetchers, jobs
 
 show_cmd = typer.Typer(name="show", help="Print available data of VK profile")
 

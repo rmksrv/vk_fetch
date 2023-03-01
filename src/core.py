@@ -7,8 +7,8 @@ import typing as t
 import requests
 import vk_api as vk
 
-from vk_fetch import constants, utils
-from vk_fetch.logging import log
+from src import constants, utils
+from src.logging import log
 
 
 class APIProvider:

@@ -4,7 +4,7 @@ import functools
 
 import vk_api.vk_api
 
-from vk_fetch import constants
+from src import constants
 
 
 def keys_excluded_dict(d: dict, keys: t.Iterable) -> dict:

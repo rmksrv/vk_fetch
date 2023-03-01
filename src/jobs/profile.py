@@ -1,7 +1,7 @@
-from vk_fetch import fetchers
-from vk_fetch.jobs import base
-from vk_fetch.logging import log, kvlog_if_present
-from vk_fetch.utils import yes_or_no
+from src import fetchers
+from src.jobs import base
+from src.logging import log, kvlog_if_present
+from src.utils import yes_or_no
 
 
 DATETIME_FORMAT = "%Y-%m-%d"

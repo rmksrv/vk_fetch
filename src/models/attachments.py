@@ -3,8 +3,8 @@ import datetime as dt
 import pathlib
 import typing as t
 
-from vk_fetch import constants, utils, core
-from vk_fetch.models import media_types
+from src import constants, utils, core
+from src.models import media_types
 
 
 @dc.dataclass(frozen=True, slots=True)

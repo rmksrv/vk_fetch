@@ -3,7 +3,7 @@ import typing as t
 import rich
 from loguru import logger
 
-from vk_fetch import constants
+from src import constants
 
 
 def configure_logger() -> None:

@@ -4,7 +4,7 @@ import typing as t
 
 import dateutil.parser
 
-from vk_fetch import utils, constants
+from src import utils, constants
 
 
 @dc.dataclass(frozen=True, slots=True)
