@@ -50,6 +50,7 @@ def vk_permission_str(p: vk_api.vk_api.VkUserPermissions) -> str:
 class AttachmentsCounter:
     uniques: int = 0
     duplicates: int = 0
+    failed: int = 0
 
     @classmethod
     def sum(cls, _it: t.Iterable["AttachmentsCounter"]) -> t.Self:
@@ -59,4 +60,5 @@ class AttachmentsCounter:
         return AttachmentsCounter(
             uniques=self.uniques + other.uniques,
             duplicates=self.duplicates + other.duplicates,
+            failed=self.failed + other.failed,
         )
