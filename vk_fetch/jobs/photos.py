@@ -7,6 +7,8 @@ from vk_fetch.logging import log, kvlog_if_present
 
 
 class ShowPhotosJob(base.VkFetchJob):
+    __slots__ = ("api",)
+
     def run(self) -> None:
         photos = fetchers.photos(self.api)
         log("Photos fetched")
@@ -24,6 +26,8 @@ def log_photo(photo: media_types.Photo) -> None:
 
 
 class DownloadPhotosJob(base.VkFetchJob):
+    __slots__ = ("api", "destination")
+
     def __init__(
         self,
         api: core.APIProvider,

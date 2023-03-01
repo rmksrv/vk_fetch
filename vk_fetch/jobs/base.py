@@ -18,6 +18,8 @@ class VkFetchJob(abc.ABC):
 
 
 class CheckPermissionsJob(VkFetchJob):
+    __slots__ = ("api", "silent")
+
     def __init__(self, api: core.APIProvider, silent: bool = False):
         super().__init__(api)
         self.silent = silent

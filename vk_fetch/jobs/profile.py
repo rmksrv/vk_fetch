@@ -8,6 +8,8 @@ DATETIME_FORMAT = "%Y-%m-%d"
 
 
 class ShowProfileInfoJob(base.VkFetchJob):
+    __slots__ = ("api",)
+
     def run(self) -> None:
         profile = fetchers.profile_info(self.api)
         log("Profile info fetched")

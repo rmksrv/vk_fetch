@@ -7,6 +7,13 @@ from vk_fetch.logging import log
 
 
 class ShowConversationAttachmentsJob(base.VkFetchJob):
+    __slots__ = (
+        "api",
+        "peer_id",
+        "user",
+        "media_types",
+    )
+
     def __init__(
         self,
         api: core.APIProvider,
@@ -95,6 +102,15 @@ class ShowConversationAttachmentsJob(base.VkFetchJob):
 
 
 class DownloadConversationAttachmentsJob(base.VkFetchJob):
+    __slots__ = (
+        "api",
+        "peer_id",
+        "user",
+        "destination",
+        "media_types",
+        "max_files_in_batch",
+    )
+
     def __init__(
         self,
         api: core.APIProvider,
