@@ -151,8 +151,10 @@ class DownloadConversationAttachmentsJob(base.VkFetchJob):
                     attachment_content.download_item(self.destination)
                 )
                 if len(download_batch) == self.max_files_in_batch:
-                    core.download_files_parallel(download_batch)
+                    result = core.download_files_parallel(download_batch)
                     download_batch.clear()
+            # final download (most likely loop ends when batch won't be full)
+            result = core.download_files_parallel(download_batch)
 
         for media_type in self.media_types:
             log(
