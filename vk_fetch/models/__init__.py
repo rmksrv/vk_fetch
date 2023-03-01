@@ -1,5 +1,6 @@
 from .profile import ProfileInfo, ChangeNameRequest
 from . import media_types
+from .users import User
 from .attachments import Attachment, AttachmentItem
 from .messages import Message
 from .conversations import (
@@ -13,4 +14,3 @@ from .conversations import (
     ConversationsChatSettingsAcl,
     ConversationsChatSettingsPhoto,
 )
-from .users import User

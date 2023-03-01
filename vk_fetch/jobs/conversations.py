@@ -104,8 +104,7 @@ class ShowConversationAttachmentsJob(base.VkFetchJob):
 class DownloadConversationAttachmentsJob(base.VkFetchJob):
     __slots__ = (
         "api",
-        "peer_id",
-        "user",
+        "conversation_item",
         "destination",
         "media_types",
         "max_files_in_batch",
@@ -114,23 +113,19 @@ class DownloadConversationAttachmentsJob(base.VkFetchJob):
     def __init__(
         self,
         api: core.APIProvider,
-        peer_id: int | None = None,
-        user: models.User | None = None,
+        conversation_item: models.ConversationItem,
         destination: pathlib.Path = constants.DEFAULT_DESTINATION_PATH,
         media_types: t.Iterable[
             constants.MediaType
         ] = constants.DEFAULT_CONVERSATION_MEDIA_TYPES,
         max_files_in_batch: int = 10,
     ):
-        assert bool(peer_id) ^ bool(
-            user
-        ), 'Neither "peer_id" nor "user" was provided or was provided both'
         super().__init__(api)
-        self.user = user or fetchers.users(api, [peer_id])
-        self.peer_id = peer_id or self.user.id
+        self.conversation_item = conversation_item
         self.destination = destination
         self.media_types = media_types
         self.max_files_in_batch = max_files_in_batch
+        self.peer_name = self.conversation_item.peer_info(self.api).full_name()
 
     def run(self) -> None:
         counters: dict[constants.MediaType, utils.AttachmentsCounter] = {
@@ -140,7 +135,9 @@ class DownloadConversationAttachmentsJob(base.VkFetchJob):
             attachment_hashes = set()
             download_batch = []
             for attachment_item in fetchers.conversation_attachments_iter(
-                self.api, self.peer_id, media_type
+                self.api,
+                self.conversation_item.conversation.peer.id,
+                media_type,
             ):
                 attachment_content = attachment_item.attachment.content()
                 attachment_hash = hash(attachment_content)
@@ -165,35 +162,34 @@ class DownloadConversationAttachmentsJob(base.VkFetchJob):
         total = utils.AttachmentsCounter.sum(counters.values())
         log(
             f"  Total: {total.uniques} ({total.duplicates} duplicates) items "
-            f"from {self.user.full_name()} conversation"
+            f"from {self.peer_name} conversation"
         )
 
     @classmethod
     def batch(
         cls,
         api: core.APIProvider,
-        peer_ids: list[int] | None = None,
+        conversations_items: models.ConversationItemList,
         destination: pathlib.Path = constants.DEFAULT_DESTINATION_PATH,
         media_types: t.Iterable[
             constants.MediaType
         ] = constants.DEFAULT_CONVERSATION_MEDIA_TYPES,
     ) -> list[t.Self]:
-        users = fetchers.users(api, peer_ids)
         return [
             cls(
                 api,
-                user=user,
+                conversation_item=item,
                 destination=destination,
                 media_types=media_types,
             )
-            for user in users
+            for item in conversations_items
         ]
 
     @classmethod
     def batch_with_description(
         cls,
         api: core.APIProvider,
-        peer_ids: list[int | str],
+        conversation_items: models.ConversationItemList,
         destination: pathlib.Path = constants.DEFAULT_DESTINATION_PATH,
         media_types: t.Iterable[
             constants.MediaType
@@ -201,12 +197,12 @@ class DownloadConversationAttachmentsJob(base.VkFetchJob):
     ) -> list[tuple[t.Self, str]]:
         batch = cls.batch(
             api,
-            peer_ids=peer_ids,
+            conversations_items=conversation_items,
             destination=destination,
             media_types=media_types,
         )
         descriptions = [
-            f"Downloading attachments of {job.user.full_name()} conversation..."
+            f"Downloading attachments of {job.peer_name} conversation..."
             for job in batch
         ]
         return list(zip(batch, descriptions))

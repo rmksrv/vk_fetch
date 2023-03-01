@@ -3,7 +3,7 @@ import pathlib
 import rich.progress
 import typer
 
-from vk_fetch import constants, utils, core, fetchers, jobs
+from vk_fetch import constants, utils, core, fetchers, jobs, models
 
 download_cmd = typer.Typer(
     name="download", help="Download data from VK profile"
@@ -34,11 +34,13 @@ def download_conversation_attachments(
     api = core.APIProvider.kate_mobile(login, password)
 
     conversation_peer_ids = [utils.peer_id_from_sel(sel) for sel in sels]
-    peer_ids = [
-        pid
-        for pid in fetchers.conversations(api).peer_ids()
-        if pid in conversation_peer_ids
-    ]
+    conversation_items = models.ConversationItemList(
+        [
+            conv
+            for conv in fetchers.conversation_items(api)
+            if conv.conversation.peer.id in conversation_peer_ids
+        ]
+    )
     media_types = constants.DEFAULT_CONVERSATION_MEDIA_TYPES
 
     to_execute = [
@@ -47,7 +49,7 @@ def download_conversation_attachments(
             "Checking permissions...",
         ),
         *jobs.conversations.DownloadConversationAttachmentsJob.batch_with_description(
-            api, peer_ids, destination, media_types
+            api, conversation_items, destination, media_types
         ),
     ]
     for job, description in to_execute:
@@ -82,7 +84,7 @@ def download_all(
 
     photos_destination = destination / "photos"
     attachments_destination = destination / "attachments"
-    peer_ids = [pid for pid in fetchers.conversations(api).peer_ids()]
+    conversation_items = fetchers.conversation_items(api)
     media_types = constants.DEFAULT_CONVERSATION_MEDIA_TYPES
 
     to_execute = [
@@ -95,7 +97,7 @@ def download_all(
             "Downloading photos...",
         ),
         *jobs.conversations.DownloadConversationAttachmentsJob.batch_with_description(
-            api, peer_ids, attachments_destination, media_types
+            api, conversation_items, attachments_destination, media_types
         ),
     ]
     for job, description in to_execute:

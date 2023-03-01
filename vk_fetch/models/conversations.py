@@ -2,7 +2,7 @@ import collections
 import dataclasses as dc
 import typing as t
 
-from vk_fetch import constants, models, utils
+from vk_fetch import constants, models, utils, fetchers, core
 
 
 @dc.dataclass(frozen=True, slots=True)
@@ -101,6 +101,9 @@ class ConversationChatSettings:
             **utils.keys_excluded_dict(d, exclude_fields),
         )
 
+    def full_name(self) -> str:
+        return self.title
+
 
 @dc.dataclass(frozen=True, slots=True)
 class Conversation:
@@ -137,6 +140,9 @@ class Conversation:
         )
 
 
+PeerInfoType = models.User | ConversationChatSettings
+
+
 @dc.dataclass(frozen=True, slots=True)
 class ConversationItem:
     conversation: Conversation
@@ -149,10 +155,49 @@ class ConversationItem:
             last_message=models.Message.of(d.get("last_message")),
         )
 
+    def peer_info(self, api: core.APIProvider) -> PeerInfoType:
+        match self.conversation.peer.type:
+            case constants.ConversationType.User:
+                return fetchers.users(api, [self.conversation.peer.id])[0]
+            case constants.ConversationType.Chat:
+                return self.conversation.chat_settings
+            case _:
+                raise NotImplemented
 
-class ConversationItemList(collections.UserList):
+
+class ConversationItemList(collections.UserList[ConversationItem]):
     def peer_ids(self) -> list[int]:
         return [item.conversation.peer.id for item in self]
+
+    def peer_infos(
+        self, api: core.APIProvider
+    ) -> dict[constants.ConversationType, list[PeerInfoType]]:
+        user_ids = [
+            item.conversation.peer.id
+            for item in self
+            if item.conversation.peer.type is constants.ConversationType.User
+        ]
+        chat_infos = [
+            item.peer_info(api)
+            for item in self
+            if item.conversation.peer.type is constants.ConversationType.Chat
+        ]
+        group_ids = [
+            item.conversation.peer.id
+            for item in self
+            if item.conversation.peer.type is constants.ConversationType.Group
+        ]
+        email_ids = [
+            item.conversation.peer.id
+            for item in self
+            if item.conversation.peer.type is constants.ConversationType.Email
+        ]
+        return {
+            constants.ConversationType.User: fetchers.users(api, user_ids),
+            constants.ConversationType.Chat: chat_infos,
+            constants.ConversationType.Group: group_ids,
+            constants.ConversationType.Email: email_ids,
+        }
 
     def excluded_peers(
         self, exclude_peers: t.Iterable[str] = frozenset()

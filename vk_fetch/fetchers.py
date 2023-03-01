@@ -37,7 +37,7 @@ def photos(api: core.APIProvider) -> media_types.PhotoList:
     )
 
 
-def conversations(api: core.APIProvider) -> models.ConversationItemList:
+def conversation_items(api: core.APIProvider) -> models.ConversationItemList:
     response = api.tools.get_all_iter(
         "messages.getConversations", max_count=constants.VK_MAX_ITEMS_COUNT
     )

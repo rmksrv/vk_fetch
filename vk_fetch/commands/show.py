@@ -32,7 +32,7 @@ def show_conversation_attachments(
     conversation_peer_ids = [utils.peer_id_from_sel(sel) for sel in sels]
     peer_ids = [
         pid
-        for pid in fetchers.conversations(api).peer_ids()
+        for pid in fetchers.conversation_items(api).peer_ids()
         if pid in conversation_peer_ids
     ]
     media_types = constants.DEFAULT_CONVERSATION_MEDIA_TYPES
@@ -74,7 +74,7 @@ def show_all(
     password = password or typer.prompt("Enter password", hide_input=True)
     api = core.APIProvider.kate_mobile(login, password)
 
-    peer_ids = [pid for pid in fetchers.conversations(api).peer_ids()]
+    peer_ids = [pid for pid in fetchers.conversation_items(api).peer_ids()]
     media_types = constants.DEFAULT_CONVERSATION_MEDIA_TYPES
 
     to_execute = [
