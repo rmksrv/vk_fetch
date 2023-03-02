@@ -74,6 +74,12 @@ def download_all(
         default=constants.DEFAULT_DESTINATION_PATH,
         help="Path where all fetched data will be written",
     ),
+    exclude_sels: str = typer.Option(
+        None,
+        help="List of sels attachments of which won't be downloaded. "
+        "NOTE: Separate sels with space and wrap list. "
+        'E.g.: "11111111 -20000000 c100"',
+    ),
 ) -> None:
     """
     Download all content of profile and all attachments of every conversation
@@ -82,9 +88,18 @@ def download_all(
     password = password or typer.prompt("Enter password", hide_input=True)
     api = core.APIProvider.kate_mobile(login, password)
 
+    exclude_peer_ids = [
+        utils.peer_id_from_sel(sel) for sel in exclude_sels.split()
+    ]
     photos_destination = destination / "photos"
     attachments_destination = destination / "attachments"
-    conversation_items = fetchers.conversation_items(api)
+    conversation_items = models.ConversationItemList(
+        [
+            conv
+            for conv in fetchers.conversation_items(api)
+            if conv.conversation.peer.id not in exclude_peer_ids
+        ]
+    )
     media_types = constants.DEFAULT_CONVERSATION_MEDIA_TYPES
 
     to_execute = [

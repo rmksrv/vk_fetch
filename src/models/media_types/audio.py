@@ -60,7 +60,7 @@ class Audio(media.Media):
     def download_item(
         self, destination: pathlib.Path, modification_time: dt.datetime
     ) -> core.DownloadItem:
-        raise NotImplemented
+        raise NotImplementedError
 
     def __hash__(self):
         return hash(self.id)

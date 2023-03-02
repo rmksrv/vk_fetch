@@ -1,5 +1,6 @@
 import dataclasses as dc
 import functools
+import re
 import typing as t
 
 from vk_api import vk_api
@@ -11,20 +12,32 @@ def keys_excluded_dict(d: dict, keys: t.Iterable) -> dict:
     return {x: d[x] for x in d if x not in keys}
 
 
-def none_on_throw(*exs: type[BaseException]):
-    OfFactoryMethod = t.Callable[[...], t.Any]
-
-    def _decorator(func: OfFactoryMethod):
+def return_on_throw(retval, *exs: type[BaseException]):
+    def _decorator(func: t.Callable):
         def _wrapper(*args, **kwargs):
             try:
                 res = func(*args, **kwargs)
             except exs:
-                res = None
+                res = retval
             return res
 
         return _wrapper
 
     return _decorator
+
+
+def none_on_throw(*exs: type[BaseException]):
+    return return_on_throw(None, *exs)
+
+
+OfFactoryMethod = t.Callable[[t.Type, dict[str, t.Any]], t.Any]
+
+
+def none_on_empty_dict(of_func: OfFactoryMethod):
+    def _wrapper(cls: t.Type, d: dict[str, t.Any]):
+        return None if d is None else of_func(cls, d)
+
+    return _wrapper
 
 
 def peer_id_from_sel(sel: str) -> int:
@@ -64,3 +77,7 @@ class AttachmentsCounter:
             succeed=self.succeed + other.succeed,
             failed=self.failed + other.failed,
         )
+
+
+def sanitize_fspath(path: str):
+    return re.sub(r"[^\w_. -]", "_", path)

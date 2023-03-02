@@ -53,7 +53,9 @@ class Photo(media.Media):
         return sorted(self.sizes, key=lambda s: s.width)[-1]
 
     def download_item(
-        self, destination: pathlib.Path, modification_time: dt.datetime
+        self,
+        destination: pathlib.Path,
+        modification_time: dt.datetime = dt.datetime.now(),
     ) -> core.DownloadItem:
         return core.DownloadItem(
             url=self.highest_quality().url,

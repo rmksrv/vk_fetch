@@ -78,21 +78,27 @@ class ConversationsChatSettingsAcl:
 @dc.dataclass(frozen=True, slots=True)
 class ConversationChatSettings:
     title: str
-    members_count: int
     owner_id: int
     state: constants.ConversationState
-    photo: ConversationsChatSettingsPhoto
     active_ids: list[int]
     is_group_channel: bool
     acl: ConversationsChatSettingsAcl
     is_service: bool
-    pinned_message: models.Message | None = None
+    members_count: int | None = None
     short_poll_reactions: bool | None = None
+    pinned_message: models.Message | None = None
+    photo: ConversationsChatSettingsPhoto | None = None
 
     @classmethod
-    @utils.none_on_throw(AttributeError)
+    @utils.none_on_empty_dict
     def of(cls, d: dict[str, t.Any]) -> t.Self:
-        exclude_fields = ["state", "photo", "acl", "pinned_message"]
+        exclude_fields = [
+            "state",
+            "photo",
+            "acl",
+            "pinned_message",
+            "admin_ids",
+        ]
         return cls(
             state=constants.ConversationState(d.get("state")),
             photo=ConversationsChatSettingsPhoto.of(d.get("photo")),
@@ -140,7 +146,7 @@ class Conversation:
         )
 
 
-PeerInfoType = models.User | ConversationChatSettings
+PeerInfoType = models.User | models.Group | ConversationChatSettings
 
 
 @dc.dataclass(frozen=True, slots=True)
@@ -162,7 +168,7 @@ class ConversationItem:
             case constants.ConversationType.Chat:
                 return self.conversation.chat_settings
             case _:
-                raise NotImplemented
+                return fetchers.groups(api, [-self.conversation.peer.id])[0]
 
 
 class ConversationItemList(collections.UserList[ConversationItem]):

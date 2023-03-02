@@ -21,12 +21,14 @@ class Message:
     ref: str | None = None
 
     @classmethod
-    @utils.none_on_throw(TypeError)
+    @utils.none_on_empty_dict
     def of(cls, d: dict[str, t.Any]) -> t.Self:
         return cls(
             attachments=[
                 models.Attachment.of(att) for att in d.get("attachments")
             ],
             fwd_messages=[],
-            **utils.keys_excluded_dict(d, ["attachments", "fwd_messages"])
+            **utils.keys_excluded_dict(
+                d, ["attachments", "fwd_messages", "action"]
+            )
         )

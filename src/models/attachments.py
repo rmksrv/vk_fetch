@@ -34,7 +34,7 @@ class Attachment:
             case constants.MediaType.Audio:
                 return self.audio
             case _:
-                raise NotImplemented
+                raise NotImplementedError
 
 
 @dc.dataclass(frozen=True, slots=True)

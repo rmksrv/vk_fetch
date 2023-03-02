@@ -11,7 +11,7 @@ def configure_logger() -> None:
     logger.add(
         constants.LOGS_PATH / "file_{time}.log",
         colorize=False,
-        format="{time} | {level:<7} | {message}"
+        format="{time} | {level:<7} | {message}",
     )
 
 

@@ -28,6 +28,19 @@ def users(
     return [models.User.of(d) for d in response]
 
 
+def groups(
+    api: core.APIProvider, group_ids: list[str | int]
+) -> list[models.Group]:
+    group_ids = list(map(str, group_ids))
+    if len(group_ids) == 1:
+        params = {"group_id": group_ids[0]}
+    else:
+        params = {"group_ids": group_ids}
+
+    response = api.executor.groups.getById(**params)
+    return [models.Group.of(d) for d in response]
+
+
 def photos(api: core.APIProvider) -> media_types.PhotoList:
     response = api.tools.get_all_iter(
         "photos.getAll", max_count=constants.VK_MAX_ITEMS_COUNT

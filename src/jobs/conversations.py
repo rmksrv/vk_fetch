@@ -123,11 +123,11 @@ class DownloadConversationAttachmentsJob(base.VkFetchJob):
         super().__init__(api)
         self.conversation_item = conversation_item
         peer_info = conversation_item.peer_info(self.api)
-        peer_id = conversation_item.conversation.peer.id
         self.media_types = media_types
         self.max_files_in_batch = max_files_in_batch
         self.peer_name = peer_info.full_name()
-        self.destination = root_destination / f"{self.peer_name} ({peer_id})"
+        subdir_name = utils.sanitize_fspath(self.peer_name)
+        self.destination = root_destination / subdir_name
 
     def run(self) -> None:
         counters: dict[constants.MediaType, utils.AttachmentsCounter] = {
