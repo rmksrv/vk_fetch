@@ -17,6 +17,9 @@ class Attachment:
     link: dict | None = None
     market: dict | None = None
     wall: dict | None = None
+    poll: dict | None = None
+    gift: dict | None = None
+    sticker: dict | None = None
 
     @classmethod
     def of(cls, d: dict[str, t.Any]) -> t.Self:

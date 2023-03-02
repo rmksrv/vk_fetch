@@ -8,6 +8,8 @@ import typing as t
 
 import requests
 import vk_api as vk
+from requests import ConnectTimeout
+from urllib3.exceptions import ConnectTimeoutError
 
 from src import constants, utils
 from src.logging import log
@@ -67,6 +69,9 @@ class DownloadItem:
     destination: pathlib.Path
     modification_time: dt.datetime = dt.datetime.now()
 
+    @utils.return_on_throw(
+        constants.DownloadStatus.Failed, ConnectTimeoutError, ConnectTimeout
+    )
     def download(self) -> constants.DownloadStatus:
         download_file_path = (
             self.destination.resolve() / utils.crop_url_to_filename(self.url)

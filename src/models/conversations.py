@@ -98,6 +98,7 @@ class ConversationChatSettings:
             "acl",
             "pinned_message",
             "admin_ids",
+            "permissions",
         ]
         return cls(
             state=constants.ConversationState(d.get("state")),
