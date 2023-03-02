@@ -1,6 +1,8 @@
 import concurrent.futures
 import dataclasses as dc
+import datetime as dt
 import http
+import os
 import pathlib
 import typing as t
 
@@ -63,6 +65,7 @@ def permissions_bitmask(
 class DownloadItem:
     url: str
     destination: pathlib.Path
+    modification_time: dt.datetime = dt.datetime.now()
 
     def download(self) -> constants.DownloadStatus:
         download_file_path = (
@@ -76,11 +79,16 @@ class DownloadItem:
                     with download_file_path.open("wb") as buf:
                         for chunk in resp:
                             buf.write(chunk)
+                    self.set_new_modtime_to_downloaded_file(download_file_path)
                     return constants.DownloadStatus.Success
                 except Exception:
                     return constants.DownloadStatus.Failed
             case _:
                 return constants.DownloadStatus.Failed
+
+    def set_new_modtime_to_downloaded_file(self, file_path: pathlib.Path):
+        dt_epoch = self.modification_time.timestamp()
+        os.utime(str(file_path), (dt_epoch, dt_epoch))
 
 
 @dc.dataclass(slots=True)

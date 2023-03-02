@@ -1,8 +1,8 @@
 import dataclasses as dc
-import typing as t
 import functools
+import typing as t
 
-import vk_api.vk_api
+from vk_api import vk_api
 
 from src import constants
 
@@ -42,7 +42,7 @@ def crop_url_to_filename(url: str) -> str:
     return no_root.split("?")[0]
 
 
-def vk_permission_str(p: vk_api.vk_api.VkUserPermissions) -> str:
+def vk_permission_str(p: vk_api.VkUserPermissions) -> str:
     return p.name
 
 
@@ -50,6 +50,7 @@ def vk_permission_str(p: vk_api.vk_api.VkUserPermissions) -> str:
 class AttachmentsCounter:
     uniques: int = 0
     duplicates: int = 0
+    succeed: int = 0
     failed: int = 0
 
     @classmethod
@@ -60,5 +61,6 @@ class AttachmentsCounter:
         return AttachmentsCounter(
             uniques=self.uniques + other.uniques,
             duplicates=self.duplicates + other.duplicates,
+            succeed=self.succeed + other.succeed,
             failed=self.failed + other.failed,
         )

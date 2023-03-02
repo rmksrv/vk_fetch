@@ -57,7 +57,9 @@ class Audio(media.Media):
             **utils.keys_excluded_dict(d, exclude_fields),
         )
 
-    def download_item(self, destination: pathlib.Path) -> core.DownloadItem:
+    def download_item(
+        self, destination: pathlib.Path, modification_time: dt.datetime
+    ) -> core.DownloadItem:
         raise NotImplemented
 
     def __hash__(self):

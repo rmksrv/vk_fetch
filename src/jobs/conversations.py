@@ -114,7 +114,7 @@ class DownloadConversationAttachmentsJob(base.VkFetchJob):
         self,
         api: core.APIProvider,
         conversation_item: models.ConversationItem,
-        destination: pathlib.Path = constants.DEFAULT_DESTINATION_PATH,
+        root_destination: pathlib.Path = constants.DEFAULT_DESTINATION_PATH,
         media_types: t.Iterable[
             constants.MediaType
         ] = constants.DEFAULT_CONVERSATION_MEDIA_TYPES,
@@ -122,10 +122,12 @@ class DownloadConversationAttachmentsJob(base.VkFetchJob):
     ):
         super().__init__(api)
         self.conversation_item = conversation_item
-        self.destination = destination
+        peer_info = conversation_item.peer_info(self.api)
+        peer_id = conversation_item.conversation.peer.id
         self.media_types = media_types
         self.max_files_in_batch = max_files_in_batch
-        self.peer_name = self.conversation_item.peer_info(self.api).full_name()
+        self.peer_name = peer_info.full_name()
+        self.destination = root_destination / f"{self.peer_name} ({peer_id})"
 
     def run(self) -> None:
         counters: dict[constants.MediaType, utils.AttachmentsCounter] = {
@@ -148,25 +150,30 @@ class DownloadConversationAttachmentsJob(base.VkFetchJob):
                 counters[media_type].uniques += 1
 
                 download_batch.append(
-                    attachment_content.download_item(self.destination)
+                    attachment_content.download_item(
+                        self.destination,
+                        modification_time=attachment_item.date,
+                    )
                 )
                 if len(download_batch) == self.max_files_in_batch:
                     result = core.download_files_parallel(download_batch)
                     counters[media_type].failed += len(result.failed)
+                    counters[media_type].succeed += len(result.succeed)
                     download_batch.clear()
             # final download (most likely loop ends when batch won't be full)
             result = core.download_files_parallel(download_batch)
             counters[media_type].failed += len(result.failed)
+            counters[media_type].succeed += len(result.succeed)
 
         for media_type in self.media_types:
             log(
-                f"  {media_type.name}: {counters[media_type].uniques} items "
+                f"  {media_type.name}: {counters[media_type].succeed} items "
                 f"({counters[media_type].duplicates} duplicates, "
                 f"{counters[media_type].failed} failed) "
             )
         total = utils.AttachmentsCounter.sum(counters.values())
         log(
-            f"  Total: {total.uniques} items ({total.duplicates} duplicates, "
+            f"  Total: {total.succeed} items ({total.duplicates} duplicates, "
             f"{total.failed} failed) items from {self.peer_name} conversation"
         )
 
@@ -184,7 +191,7 @@ class DownloadConversationAttachmentsJob(base.VkFetchJob):
             cls(
                 api,
                 conversation_item=item,
-                destination=destination,
+                root_destination=destination,
                 media_types=media_types,
             )
             for item in conversations_items

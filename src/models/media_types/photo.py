@@ -1,5 +1,6 @@
 import collections
 import dataclasses as dc
+import datetime as dt
 import pathlib
 import typing as t
 
@@ -51,9 +52,13 @@ class Photo(media.Media):
     def highest_quality(self) -> PhotoSize:
         return sorted(self.sizes, key=lambda s: s.width)[-1]
 
-    def download_item(self, destination: pathlib.Path) -> core.DownloadItem:
+    def download_item(
+        self, destination: pathlib.Path, modification_time: dt.datetime
+    ) -> core.DownloadItem:
         return core.DownloadItem(
-            url=self.highest_quality().url, destination=destination
+            url=self.highest_quality().url,
+            destination=destination,
+            modification_time=modification_time,
         )
 
 
