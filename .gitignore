@@ -4,3 +4,4 @@ sandbox.py
 logs/
 vk_fetch_downloads/
 custom/
+dist/
