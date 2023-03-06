@@ -75,7 +75,7 @@ def download_all(
         help="Path where all fetched data will be written",
     ),
     exclude_sels: str = typer.Option(
-        None,
+        "",
         help="List of sels attachments of which won't be downloaded. "
         "NOTE: Separate sels with space and wrap list. "
         'E.g.: "11111111 -20000000 c100"',

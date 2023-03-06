@@ -81,7 +81,7 @@ def show_all(
         jobs.base.CheckPermissionsJob(api),
         jobs.profile.ShowProfileInfoJob(api),
         jobs.photos.ShowPhotosJob(api),
-        *jobs.conversations.ShowConversationAttachmentsJob.batch_with_description(
+        *jobs.conversations.ShowConversationAttachmentsJob.batch(
             api, peer_ids, media_types
         ),
     ]
