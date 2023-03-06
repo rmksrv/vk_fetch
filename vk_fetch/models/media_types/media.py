@@ -2,7 +2,7 @@ import abc
 import datetime as dt
 import pathlib
 
-from src import core
+from vk_fetch import core
 
 
 class Media(abc.ABC):

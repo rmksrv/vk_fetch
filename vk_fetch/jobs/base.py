@@ -1,8 +1,8 @@
 import abc
 import typing as t
 
-from src import core, fetchers, utils
-from src.logging import log
+from vk_fetch import core, fetchers, utils
+from vk_fetch.logging import log
 
 
 class VkFetchJob(abc.ABC):

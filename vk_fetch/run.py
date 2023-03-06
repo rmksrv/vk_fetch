@@ -4,8 +4,8 @@ Script helps to fetch all data from your VK account
 
 import typer
 
-from src import core, jobs, commands
-from src.logging import configure_logger, log
+from vk_fetch import core, jobs, commands
+from vk_fetch.logging import configure_logger, log
 
 
 app = typer.Typer(name="vk_fetch", help=__doc__)

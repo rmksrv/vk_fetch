@@ -2,7 +2,7 @@ import collections
 import dataclasses as dc
 import typing as t
 
-from src import constants, models, utils, fetchers, core
+from vk_fetch import constants, models, utils, fetchers, core
 
 
 @dc.dataclass(frozen=True, slots=True)

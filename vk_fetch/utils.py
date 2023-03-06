@@ -5,7 +5,7 @@ import typing as t
 
 from vk_api import vk_api
 
-from src import constants
+from vk_fetch import constants
 
 
 def keys_excluded_dict(d: dict, keys: t.Iterable) -> dict:

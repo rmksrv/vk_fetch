@@ -2,8 +2,8 @@ import typing as t
 
 import vk_api as vk
 
-from src import constants, core, models
-from src.models import media_types
+from vk_fetch import constants, core, models
+from vk_fetch.models import media_types
 
 UserResponse = list[dict[str, t.Any]]
 

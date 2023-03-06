@@ -11,8 +11,8 @@ import vk_api as vk
 from requests import ConnectTimeout
 from urllib3.exceptions import ConnectTimeoutError
 
-from src import constants, utils
-from src.logging import log
+from vk_fetch import constants, utils
+from vk_fetch.logging import log
 
 
 class APIProvider:

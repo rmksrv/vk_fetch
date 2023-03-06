@@ -1,9 +1,9 @@
 import pathlib
 
-from src import fetchers, core, constants
-from src.jobs import base
-from src.models import media_types
-from src.logging import log, kvlog_if_present
+from vk_fetch import fetchers, core, constants
+from vk_fetch.jobs import base
+from vk_fetch.models import media_types
+from vk_fetch.logging import log, kvlog_if_present
 
 
 class ShowPhotosJob(base.VkFetchJob):

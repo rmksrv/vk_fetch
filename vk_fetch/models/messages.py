@@ -1,7 +1,7 @@
 import dataclasses as dc
 import typing as t
 
-from src import models, utils
+from vk_fetch import models, utils
 
 
 @dc.dataclass(frozen=True, slots=True)

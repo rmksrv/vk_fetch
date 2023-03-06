@@ -3,7 +3,7 @@ import pathlib
 import rich.progress
 import typer
 
-from src import constants, utils, core, fetchers, jobs, models
+from vk_fetch import constants, utils, core, fetchers, jobs, models
 
 download_cmd = typer.Typer(
     name="download", help="Download data from VK profile"
