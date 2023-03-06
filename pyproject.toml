@@ -1,10 +1,12 @@
 [tool.poetry]
 name = "vk-fetch"
-version = "0.5.1"
-description = ""
+version = "0.5.2"
+description = "Script helps to fetch all data from your VK account"
 authors = ["Roman Kosarev <rmksrv@outlook.com>"]
 readme = "README.md"
 packages = [{include = "vk_fetch"}]
+license = "MIT"
+homepage = "https://github.com/rmksrv/vk_fetch"
 
 
 [tool.poetry.scripts]
